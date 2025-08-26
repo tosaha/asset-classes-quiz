@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Asset Class Finder | Professional Market Matching</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f9fafb;
+            --white: #ffffff;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .question-container {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .question-description {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: var(--shadow);
+            transform: translateX(4px);
+        }
+
+        .option.selected {
+            background: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .option-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .option-description {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* Special input options */
+        .input-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-option input, .input-option select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-option input:focus, .input-option select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Slider option */
+        .slider-option {
+            padding: 20px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            width: 360px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 25px;
+            position: sticky;
+            top: 20px;
+            animation: fadeIn 0.5s ease;
+            display: none;
+        }
+
+        .results-panel.active {
+            display: block;
+        }
+
+        .results-panel h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .live-score {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .live-score.leading {
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+            border: 2px solid var(--primary);
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .score-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .score-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .score-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .score-factors {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* Final Results */
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card.primary {
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+        }
+
+        .match-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .asset-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .asset-class {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .key-factors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .factor-chip {
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .characteristics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .characteristic {
+            text-align: center;
+        }
+
+        .char-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .char-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .start-screen h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .start-screen p {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .quick-start {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .quick-btn {
+            padding: 15px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .quick-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .quick-desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 1200px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .results-panel {
+                width: 100%;
+                position: static;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .question {
+                font-size: 18px;
+            }
+
+            .quick-start {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>Smart Asset Class Finder</h1>
+                <p>Advanced market matching in 7 quick questions</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Start Screen -->
+                <div id="startScreen" class="start-screen">
+                    <h2>Find Your Perfect Trading Market</h2>
+                    <p>Answer a few key questions and we'll use advanced multi-criteria analysis to match you with the best asset classes from 18+ markets.</p>
+                    
+                    <div class="quick-start">
+                        <div class="quick-btn" onclick="startWithProfile('day_trader')">
+                            <div class="quick-title">🚀 Day Trader</div>
+                            <div class="quick-desc">High liquidity, tight spreads</div>
+                        </div>
+                        <div class="quick-btn" onclick="startWithProfile('swing_trader')">
+                            <div class="quick-title">📊 Swing Trader</div>
+                            <div class="quick-desc">Multi-day positions</div>
+                        </div>
+                        <div class="quick-btn" onclick="startWithProfile('investor')">
+                            <div class="quick-title">💼 Investor</div>
+                            <div class="quick-desc">Long-term holdings</div>
+                        </div>
+                        <div class="quick-btn" onclick="startWithProfile('beginner')">
+                            <div class="quick-title">🌱 Beginner</div>
+                            <div class="quick-desc">Learning the ropes</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startQuiz()">Start Custom Assessment</button>
+                </div>
+
+                <!-- Quiz Container -->
+                <div id="quizContainer" style="display: none;">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+
+                <!-- Results Container -->
+                <div id="resultsContainer" class="results-container">
+                    <!-- Results will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Results Panel -->
+        <div class="results-panel" id="resultsPanel">
+            <h3>Live Matching</h3>
+            <div id="liveScores">
+                <!-- Live scores will be dynamically updated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive Asset Universe (same as v2 but hidden from user)
+        const assetUniverse = {
+            stocks_index: { 
+                name: "Index ETFs (SPY, QQQ)", 
+                class: "Equities",
+                displayName: "Index Funds",
+                vol: 0.4, liq: 0.95, hours: "RTH", lever: 2, min_cap: 500, 
+                reg: 0.95, spread: 0.01, fee: 0.01, news: 0.6, quant: 0.7, 
+                complexity: 0.3, timeframe: 0.5
+            },
+            stocks_single: { 
+                name: "Single Stocks (AAPL, TSLA)", 
+                class: "Equities",
+                displayName: "Individual Stocks",
+                vol: 0.7, liq: 0.8, hours: "RTH", lever: 2, min_cap: 1000, 
+                reg: 0.95, spread: 0.05, fee: 0.02, news: 0.9, quant: 0.6, 
+                complexity: 0.4, timeframe: 0.5
+            },
+            stocks_smallcap: {
+                name: "Small Cap Stocks",
+                class: "Equities",
+                displayName: "Small Caps",
+                vol: 0.85, liq: 0.5, hours: "RTH", lever: 2, min_cap: 2500, 
+                reg: 0.95, spread: 0.15, fee: 0.02, news: 0.7, quant: 0.4, 
+                complexity: 0.6, timeframe: 0.6
+            },
+            crypto_majors: { 
+                name: "Bitcoin & Ethereum", 
+                class: "Crypto",
+                displayName: "Major Crypto",
+                vol: 0.9, liq: 0.9, hours: "24/7", lever: 5, min_cap: 100, 
+                reg: 0.4, spread: 0.02, fee: 0.05, news: 0.8, quant: 0.7, 
+                complexity: 0.5, timeframe: 0.4
+            },
+            crypto_alts: { 
+                name: "Altcoins (SOL, AVAX, etc.)", 
+                class: "Crypto",
+                displayName: "Altcoins",
+                vol: 1.0, liq: 0.5, hours: "24/7", lever: 5, min_cap: 100, 
+                reg: 0.3, spread: 0.08, fee: 0.08, news: 0.9, quant: 0.6, 
+                complexity: 0.7, timeframe: 0.3
+            },
+            fx_majors: { 
+                name: "Major Forex (EUR/USD, GBP/USD)", 
+                class: "Forex",
+                displayName: "Major FX",
+                vol: 0.35, liq: 1.0, hours: "24/5", lever: 10, min_cap: 200, 
+                reg: 0.8, spread: 0.01, fee: 0.01, news: 0.7, quant: 0.8, 
+                complexity: 0.4, timeframe: 0.3
+            },
+            fx_minors: {
+                name: "Minor Forex Pairs",
+                class: "Forex",
+                displayName: "Minor FX",
+                vol: 0.45, liq: 0.8, hours: "24/5", lever: 10, min_cap: 500, 
+                reg: 0.8, spread: 0.03, fee: 0.02, news: 0.6, quant: 0.7, 
+                complexity: 0.5, timeframe: 0.4
+            },
+            fut_micro: { 
+                name: "Micro Futures (MES, MNQ)", 
+                class: "Futures",
+                displayName: "Micro Futures",
+                vol: 0.7, liq: 0.9, hours: "23/5", lever: 10, min_cap: 1500, 
+                reg: 0.9, spread: 0.02, fee: 0.02, news: 0.7, quant: 0.8, 
+                complexity: 0.5, timeframe: 0.3
+            },
+            fut_emini: {
+                name: "E-mini Futures (ES, NQ)",
+                class: "Futures",
+                displayName: "E-mini Futures",
+                vol: 0.7, liq: 0.95, hours: "23/5", lever: 12, min_cap: 10000, 
+                reg: 0.9, spread: 0.01, fee: 0.03, news: 0.7, quant: 0.8, 
+                complexity: 0.6, timeframe: 0.2
+            },
+            fut_commodities: { 
+                name: "Commodities (Oil, Gold)", 
+                class: "Futures",
+                displayName: "Commodities",
+                vol: 0.75, liq: 0.7, hours: "23/5", lever: 12, min_cap: 3000, 
+                reg: 0.9, spread: 0.04, fee: 0.03, news: 0.8, quant: 0.7, 
+                complexity: 0.7, timeframe: 0.4
+            },
+            options_liquid: { 
+                name: "Stock Options (SPY, AAPL)", 
+                class: "Options",
+                displayName: "Options",
+                vol: 0.6, liq: 0.8, hours: "RTH", lever: 0, min_cap: 2000, 
+                reg: 0.95, spread: 0.06, fee: 0.03, news: 0.7, quant: 0.9, 
+                complexity: 0.8, timeframe: 0.6
+            },
+            bonds_etf: { 
+                name: "Bond ETFs (TLT, HYG)", 
+                class: "Fixed Income",
+                displayName: "Bonds",
+                vol: 0.15, liq: 0.8, hours: "RTH", lever: 1, min_cap: 500, 
+                reg: 0.95, spread: 0.01, fee: 0.005, news: 0.6, quant: 0.6, 
+                complexity: 0.2, timeframe: 0.8
+            }
+        };
+
+        // Simplified questions that map to sophisticated weights
+        const questions = [
+            {
+                id: 'capital',
+                question: "How much capital are you starting with?",
+                description: "This determines which markets are accessible to you",
+                type: 'input',
+                inputType: 'number',
+                placeholder: 'Enter amount in USD',
+                min: 100,
+                max: 1000000,
+                default: 10000
+            },
+            {
+                id: 'region',
+                question: "Where are you located?",
+                description: "Different regions have different regulations and market access",
+                type: 'select',
+                options: [
+                    { value: 'US', text: 'United States', constraints: { pdt: true, leverage_cap: 4 } },
+                    { value: 'EU', text: 'European Union', constraints: { pdt: false, leverage_cap: 5 } },
+                    { value: 'UK', text: 'United Kingdom', constraints: { pdt: false, leverage_cap: 10 } },
+                    { value: 'APAC', text: 'Asia-Pacific', constraints: { pdt: false, leverage_cap: 20 } },
+                    { value: 'OTHER', text: 'Other', constraints: { pdt: false, leverage_cap: 10 } }
+                ]
+            },
+            {
+                id: 'timeframe',
+                question: "How long do you typically want to hold positions?",
+                description: "Your preferred trading timeframe",
+                type: 'choice',
+                options: [
+                    { value: 0.1, text: 'Seconds to Minutes', desc: 'Scalping - many trades per day', weights: { timeframe: 0.1, liquidity: 0.9, cost: 0.9 } },
+                    { value: 0.3, text: 'Minutes to Hours', desc: 'Day trading - close before market close', weights: { timeframe: 0.3, liquidity: 0.8, cost: 0.8 } },
+                    { value: 0.6, text: 'Days to Weeks', desc: 'Swing trading - ride medium trends', weights: { timeframe: 0.6, liquidity: 0.6, cost: 0.6 } },
+                    { value: 0.9, text: 'Weeks to Months', desc: 'Position trading - long-term trends', weights: { timeframe: 0.9, liquidity: 0.4, cost: 0.4 } }
+                ]
+            },
+            {
+                id: 'risk',
+                question: "What's your risk tolerance?",
+                description: "How much volatility can you handle emotionally and financially?",
+                type: 'slider',
+                min: 0,
+                max: 10,
+                default: 5,
+                labels: ['Conservative', 'Moderate', 'Aggressive'],
+                weights: { risk: 1.0 }
+            },
+            {
+                id: 'availability',
+                question: "When can you actively monitor markets?",
+                description: "Different markets operate at different times",
+                type: 'choice',
+                options: [
+                    { value: 'us_hours', text: 'US Market Hours', desc: '9:30 AM - 4:00 PM ET', weights: { hours24: 0.2 } },
+                    { value: 'asian', text: 'Asian Hours', desc: 'Overnight US time', weights: { hours24: 0.5 } },
+                    { value: 'flexible', text: 'Flexible Schedule', desc: 'Can trade various times', weights: { hours24: 0.6 } },
+                    { value: '24_7', text: 'Anytime', desc: 'Need 24/7 market access', weights: { hours24: 1.0 } }
+                ]
+            },
+            {
+                id: 'style',
+                question: "How do you prefer to make trading decisions?",
+                description: "Your analytical approach to markets",
+                type: 'choice',
+                options: [
+                    { value: 'technical', text: 'Technical Analysis', desc: 'Charts, patterns, indicators', weights: { quant: 0.7, news: 0.3 } },
+                    { value: 'fundamental', text: 'Fundamental Analysis', desc: 'Company data, economics, news', weights: { quant: 0.3, news: 0.8 } },
+                    { value: 'sentiment', text: 'Sentiment & Social', desc: 'Market mood, social trends', weights: { quant: 0.2, news: 0.9 } },
+                    { value: 'systematic', text: 'Systematic/Algorithmic', desc: 'Rules-based, backtested strategies', weights: { quant: 1.0, news: 0.2 } }
+                ]
+            },
+            {
+                id: 'priority',
+                question: "What matters most to you?",
+                description: "Your top priority when choosing a market",
+                type: 'choice',
+                options: [
+                    { value: 'costs', text: 'Low Costs', desc: 'Minimal fees and tight spreads', weights: { cost: 1.0, liquidity: 0.7 } },
+                    { value: 'safety', text: 'Safety & Regulation', desc: 'Maximum investor protection', weights: { regulation: 1.0, complexity: 0.2 } },
+                    { value: 'opportunity', text: 'High Returns', desc: 'Maximum profit potential', weights: { risk: 0.8, leverage: 0.7 } },
+                    { value: 'simplicity', text: 'Simplicity', desc: 'Easy to understand and trade', weights: { complexity: 0.1, regulation: 0.7 } }
+                ]
+            }
+        ];
+
+        // Profile presets
+        const profilePresets = {
+            day_trader: {
+                capital: 25000,
+                region: 'US',
+                timeframe: 0.3,
+                risk: 7,
+                availability: 'us_hours',
+                style: 'technical',
+                priority: 'costs'
+            },
+            swing_trader: {
+                capital: 10000,
+                region: 'US',
+                timeframe: 0.6,
+                risk: 5,
+                availability: 'flexible',
+                style: 'technical',
+                priority: 'opportunity'
+            },
+            investor: {
+                capital: 50000,
+                region: 'US',
+                timeframe: 0.9,
+                risk: 3,
+                availability: 'us_hours',
+                style: 'fundamental',
+                priority: 'safety'
+            },
+            beginner: {
+                capital: 1000,
+                region: 'US',
+                timeframe: 0.6,
+                risk: 3,
+                availability: 'flexible',
+                style: 'fundamental',
+                priority: 'simplicity'
+            }
+        };
+
+        // State
+        let currentQuestion = 0;
+        let answers = {};
+        let liveScores = {};
+
+        // TOPSIS Algorithm (simplified from v2)
+        function calculateScores(answers) {
+            // Build weights from answers
+            const weights = {
+                risk: (answers.risk || 5) / 10,
+                liquidity: 0.7,
+                cost: 0.6,
+                leverage: 0.3,
+                news: 0.5,
+                quant: 0.5,
+                hours24: 0.3,
+                regulation: 0.7,
+                complexity: 0.5,
+                timeframe: 0.5
+            };
+
+            // Override with specific answer weights
+            questions.forEach(q => {
+                if (q.type === 'choice' && answers[q.id]) {
+                    const selected = q.options.find(o => o.value === answers[q.id]);
+                    if (selected && selected.weights) {
+                        Object.assign(weights, selected.weights);
+                    }
+                } else if (q.type === 'slider' && q.weights && answers[q.id] !== undefined) {
+                    Object.keys(q.weights).forEach(key => {
+                        weights[key] = (answers[q.id] / 10) * q.weights[key];
+                    });
+                }
+            });
+
+            // Filter assets by capital
+            const capital = answers.capital || 10000;
+            const eligibleAssets = Object.entries(assetUniverse)
+                .filter(([key, asset]) => capital >= asset.min_cap);
+
+            // Apply constraints
+            const region = answers.region || 'US';
+            const constraints = questions.find(q => q.id === 'region').options
+                .find(o => o.value === region)?.constraints || {};
+
+            // Simple scoring (simplified TOPSIS)
+            const scores = eligibleAssets.map(([key, asset]) => {
+                let score = 0;
+                
+                // Risk matching (inverse for conservative)
+                const riskMatch = weights.risk < 0.5 ? 
+                    (1 - asset.vol) * (1 - weights.risk) * 2 :
+                    asset.vol * weights.risk;
+                score += riskMatch * 20;
+
+                // Liquidity preference
+                score += asset.liq * weights.liquidity * 15;
+
+                // Cost sensitivity (inverse - lower is better)
+                score += (1 - (asset.spread + asset.fee)) * weights.cost * 10;
+
+                // Hours matching
+                const needs24_7 = weights.hours24 > 0.7;
+                if (needs24_7 && asset.hours === '24/7') score += 15;
+                else if (!needs24_7 && asset.hours === 'RTH') score += 10;
+
+                // Regulation preference
+                score += asset.reg * weights.regulation * 10;
+
+                // News/Quant style matching
+                score += asset.news * weights.news * 5;
+                score += asset.quant * weights.quant * 5;
+
+                // Complexity (inverse for beginners)
+                score += (1 - asset.complexity) * (1 - weights.complexity) * 5;
+
+                // Timeframe matching
+                const tfDiff = Math.abs(asset.timeframe - (answers.timeframe || 0.5));
+                score += (1 - tfDiff) * 10;
+
+                // PDT rule penalty
+                if (constraints.pdt && capital < 25000 && asset.timeframe < 0.4) {
+                    score -= 20;
+                }
+
+                return {
+                    key,
+                    name: asset.name,
+                    displayName: asset.displayName,
+                    class: asset.class,
+                    score: Math.max(0, Math.min(100, score)),
+                    factors: {
+                        liquidity: Math.round(asset.liq * 100),
+                        costs: Math.round((1 - (asset.spread + asset.fee)) * 100),
+                        regulation: Math.round(asset.reg * 100),
+                        volatility: Math.round(asset.vol * 100)
+                    }
+                };
+            });
+
+            return scores.sort((a, b) => b.score - a.score);
+        }
+
+        // Start quiz
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('resultsPanel').classList.add('active');
+            currentQuestion = 0;
+            answers = {};
+            renderQuestion();
+            updateLiveScores();
+        }
+
+        // Start with profile
+        function startWithProfile(profile) {
+            answers = { ...profilePresets[profile] };
+            startQuiz();
+            // Skip to later questions since basics are prefilled
+            currentQuestion = 2;
+            renderQuestion();
+        }
+
+        // Render current question
+        function renderQuestion() {
+            const container = document.getElementById('quizContainer');
+            const question = questions[currentQuestion];
+            
+            // Update progress
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            let optionsHtml = '';
+            
+            if (question.type === 'choice') {
+                optionsHtml = question.options.map(option => `
+                    <div class="option ${answers[question.id] === option.value ? 'selected' : ''}" 
+                         onclick="selectOption('${question.id}', '${option.value}')">
+                        <div class="option-title">${option.text}</div>
+                        <div class="option-description">${option.desc}</div>
+                    </div>
+                `).join('');
+            } else if (question.type === 'input') {
+                const currentValue = answers[question.id] || question.default;
+                optionsHtml = `
+                    <div class="option input-option">
+                        <input type="${question.inputType}" 
+                               id="${question.id}_input"
+                               value="${currentValue}"
+                               min="${question.min}"
+                               max="${question.max}"
+                               placeholder="${question.placeholder}"
+                               onchange="selectInput('${question.id}', this.value)">
+                    </div>
+                `;
+            } else if (question.type === 'select') {
+                const currentValue = answers[question.id] || '';
+                optionsHtml = `
+                    <div class="option input-option">
+                        <select id="${question.id}_select" 
+                                onchange="selectInput('${question.id}', this.value)">
+                            <option value="">Choose...</option>
+                            ${question.options.map(opt => `
+                                <option value="${opt.value}" ${currentValue === opt.value ? 'selected' : ''}>
+                                    ${opt.text}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+                `;
+            } else if (question.type === 'slider') {
+                const currentValue = answers[question.id] || question.default;
+                optionsHtml = `
+                    <div class="option slider-option">
+                        <div class="slider-labels">
+                            ${question.labels.map(label => `<span>${label}</span>`).join('')}
+                        </div>
+                        <input type="range" 
+                               class="slider"
+                               id="${question.id}_slider"
+                               min="${question.min}"
+                               max="${question.max}"
+                               value="${currentValue}"
+                               oninput="selectSlider('${question.id}', this.value)">
+                        <div class="slider-value" id="${question.id}_value">${currentValue}</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = `
+                <div class="question-container active">
+                    <h3 class="question">Question ${currentQuestion + 1} of ${questions.length}</h3>
+                    <h2 class="question">${question.question}</h2>
+                    <p class="question-description">${question.description}</p>
+                    <div class="options">
+                        ${optionsHtml}
+                    </div>
+                    <div class="navigation">
+                        <button class="btn btn-secondary" onclick="previousQuestion()" 
+                                ${currentQuestion === 0 ? 'disabled' : ''}>
+                            Previous
+                        </button>
+                        <button class="btn btn-primary" onclick="nextQuestion()" 
+                                id="nextBtn">
+                            ${currentQuestion === questions.length - 1 ? 'See Results' : 'Next'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Check if answer exists to enable next button
+            checkNextButton();
+        }
+
+        // Selection handlers
+        function selectOption(questionId, value) {
+            answers[questionId] = value;
+            renderQuestion();
+            updateLiveScores();
+        }
+
+        function selectInput(questionId, value) {
+            answers[questionId] = questionId === 'capital' ? parseInt(value) : value;
+            checkNextButton();
+            updateLiveScores();
+        }
+
+        function selectSlider(questionId, value) {
+            answers[questionId] = parseInt(value);
+            document.getElementById(`${questionId}_value`).textContent = value;
+            checkNextButton();
+            updateLiveScores();
+        }
+
+        // Check if next button should be enabled
+        function checkNextButton() {
+            const question = questions[currentQuestion];
+            const hasAnswer = answers[question.id] !== undefined && answers[question.id] !== '';
+            document.getElementById('nextBtn').disabled = !hasAnswer;
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        // Update live scores
+        function updateLiveScores() {
+            const scores = calculateScores(answers);
+            const topScores = scores.slice(0, 5);
+            
+            const html = topScores.map((asset, index) => `
+                <div class="live-score ${index === 0 ? 'leading' : ''}">
+                    <div class="score-header">
+                        <div class="score-name">${asset.displayName}</div>
+                        <div class="score-value">${Math.round(asset.score)}%</div>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${asset.score}%"></div>
+                    </div>
+                    <div class="score-factors">
+                        ${asset.class} • Liq: ${asset.factors.liquidity}% • Costs: ${asset.factors.costs}%
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('liveScores').innerHTML = html;
+        }
+
+        // Show final results
+        function showResults() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultsPanel').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+            
+            const scores = calculateScores(answers);
+            const topResults = scores.slice(0, 4);
+            
+            const html = `
+                <h2 class="question">Your Recommended Markets</h2>
+                <p class="question-description">Based on your profile, here are the best asset classes for you:</p>
+                
+                ${topResults.map((asset, index) => `
+                    <div class="result-card ${index === 0 ? 'primary' : ''}">
+                        <div class="match-badge">${Math.round(asset.score)}% Match</div>
+                        <div class="asset-name">${asset.name}</div>
+                        <div class="asset-class">${asset.class}</div>
+                        
+                        <div class="key-factors">
+                            ${Object.entries(asset.factors)
+                                .sort((a, b) => b[1] - a[1])
+                                .slice(0, 3)
+                                .map(([key, value]) => `
+                                    <div class="factor-chip">${key}: ${value}%</div>
+                                `).join('')}
+                        </div>
+                        
+                        <div class="characteristics">
+                            <div class="characteristic">
+                                <div class="char-label">Min Capital</div>
+                                <div class="char-value">$${assetUniverse[asset.key].min_cap.toLocaleString()}</div>
+                            </div>
+                            <div class="characteristic">
+                                <div class="char-label">Hours</div>
+                                <div class="char-value">${assetUniverse[asset.key].hours}</div>
+                            </div>
+                            <div class="characteristic">
+                                <div class="char-label">Leverage</div>
+                                <div class="char-value">${assetUniverse[asset.key].lever}x</div>
+                            </div>
+                            <div class="characteristic">
+                                <div class="char-label">Volatility</div>
+                                <div class="char-value">${
+                                    assetUniverse[asset.key].vol < 0.3 ? 'Low' :
+                                    assetUniverse[asset.key].vol < 0.7 ? 'Medium' : 'High'
+                                }</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="location.reload()">Start Over</button>
+                    <button class="btn btn-primary" onclick="window.print()">Save Results</button>
+                </div>
+            `;
+            
+            document.getElementById('resultsContainer').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
