@@ -37,7 +37,16 @@
             color: var(--text);
         }
 
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
         .container {
+            flex: 1;
             max-width: 800px;
             width: 100%;
             background: var(--white);
@@ -45,6 +54,128 @@
             box-shadow: var(--shadow-lg);
             overflow: hidden;
             animation: fadeIn 0.5s ease;
+        }
+
+        .score-panel {
+            width: 320px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 20px;
+            position: sticky;
+            top: 20px;
+            animation: fadeIn 0.5s ease;
+            display: none;
+        }
+
+        .score-panel.active {
+            display: block;
+        }
+
+        .score-panel h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .asset-score-item {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .asset-score-item.leading {
+            background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+            border: 2px solid var(--primary);
+        }
+
+        .asset-score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .asset-score-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .asset-score-value {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .score-change {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            animation: scoreChange 0.5s ease;
+        }
+
+        .score-change.positive {
+            color: var(--secondary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .score-change.negative {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .score-change.neutral {
+            color: var(--text-light);
+            background: rgba(107, 114, 128, 0.1);
+        }
+
+        @keyframes scoreChange {
+            0% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .asset-score-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .asset-score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .question-impact {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .question-impact h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .question-impact p {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.5;
         }
 
         @keyframes fadeIn {
@@ -393,6 +524,18 @@
             color: var(--text);
         }
 
+        @media (max-width: 1200px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .score-panel {
+                width: 100%;
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 24px;
@@ -409,18 +552,27 @@
             .asset-characteristics {
                 grid-template-columns: 1fr;
             }
+
+            .score-panel {
+                padding: 15px;
+            }
+
+            .asset-score-item {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Asset Class Selection Guide</h1>
-            <p>Find your ideal trading market based on your preferences and temperament</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressBar"></div>
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>Asset Class Selection Guide</h1>
+                <p>Find your ideal trading market based on your preferences and temperament</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
             </div>
-        </div>
 
         <div class="content">
             <!-- Start Screen -->
@@ -461,6 +613,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Score Panel -->
+    <div id="scorePanel" class="score-panel">
+        <h3>Live Match Scores</h3>
+        <div id="assetScores">
+            <!-- Asset scores will be dynamically inserted here -->
+        </div>
+        <div class="question-impact" id="questionImpact" style="display: none;">
+            <h4>Current Question Impact</h4>
+            <p id="impactDescription"></p>
+        </div>
+    </div>
+</div>
 
     <script>
         // Asset class data with comprehensive characteristics
@@ -800,11 +965,136 @@
             futures: 0,
             options: 0
         };
+        let previousScores = {
+            stocks: 0,
+            crypto: 0,
+            forex: 0,
+            futures: 0,
+            options: 0
+        };
+        let tempScores = {
+            stocks: 0,
+            crypto: 0,
+            forex: 0,
+            futures: 0,
+            options: 0
+        };
 
         function startQuiz() {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('scorePanel').classList.add('active');
+            initializeScorePanel();
             renderQuestion();
+        }
+
+        function initializeScorePanel() {
+            const scoresHtml = Object.keys(assetClasses).map(key => `
+                <div class="asset-score-item" id="score-${key}">
+                    <div class="asset-score-header">
+                        <div class="asset-score-name">${assetClasses[key].name}</div>
+                        <div class="asset-score-value">
+                            <span id="score-value-${key}">0%</span>
+                            <span class="score-change neutral" id="score-change-${key}" style="display: none;">0</span>
+                        </div>
+                    </div>
+                    <div class="asset-score-bar">
+                        <div class="asset-score-fill" id="score-bar-${key}" style="width: 0%"></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('assetScores').innerHTML = scoresHtml;
+        }
+
+        function updateScorePanel(showChange = false) {
+            const maxPossibleScore = questions.length * 5;
+            
+            Object.keys(scores).forEach(key => {
+                const percentage = Math.round((scores[key] / maxPossibleScore) * 100);
+                const changeValue = scores[key] - previousScores[key];
+                
+                // Update score value
+                document.getElementById(`score-value-${key}`).textContent = `${percentage}%`;
+                
+                // Update progress bar
+                document.getElementById(`score-bar-${key}`).style.width = `${percentage}%`;
+                
+                // Show score change if applicable
+                if (showChange && changeValue !== 0) {
+                    const changeElement = document.getElementById(`score-change-${key}`);
+                    changeElement.style.display = 'inline';
+                    changeElement.textContent = changeValue > 0 ? `+${changeValue}` : `${changeValue}`;
+                    changeElement.className = `score-change ${changeValue > 0 ? 'positive' : changeValue < 0 ? 'negative' : 'neutral'}`;
+                    
+                    // Hide after animation
+                    setTimeout(() => {
+                        changeElement.style.display = 'none';
+                    }, 2000);
+                }
+            });
+            
+            // Highlight leading asset
+            const sortedAssets = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+            document.querySelectorAll('.asset-score-item').forEach(item => {
+                item.classList.remove('leading');
+            });
+            if (scores[sortedAssets[0]] > 0) {
+                document.getElementById(`score-${sortedAssets[0]}`).classList.add('leading');
+            }
+        }
+
+        function previewOptionScores(optionIndex) {
+            const question = questions[currentQuestion];
+            const option = question.options[optionIndex];
+            
+            // Copy current scores to temp
+            Object.keys(scores).forEach(key => {
+                tempScores[key] = scores[key];
+            });
+            
+            // Add option scores to temp
+            Object.keys(option.scores).forEach(asset => {
+                tempScores[asset] += option.scores[asset];
+            });
+            
+            // Update display with temp scores
+            const maxPossibleScore = questions.length * 5;
+            Object.keys(tempScores).forEach(key => {
+                const currentPercentage = Math.round((scores[key] / maxPossibleScore) * 100);
+                const tempPercentage = Math.round((tempScores[key] / maxPossibleScore) * 100);
+                const change = option.scores[key] || 0;
+                
+                if (change !== 0) {
+                    const changeElement = document.getElementById(`score-change-${key}`);
+                    changeElement.style.display = 'inline';
+                    changeElement.textContent = change > 0 ? `+${change}` : `${change}`;
+                    changeElement.className = `score-change ${change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral'}`;
+                }
+            });
+            
+            // Show impact description
+            const impactDiv = document.getElementById('questionImpact');
+            const impactDesc = document.getElementById('impactDescription');
+            impactDiv.style.display = 'block';
+            
+            const topImpacts = Object.keys(option.scores)
+                .filter(key => option.scores[key] > 3)
+                .map(key => assetClasses[key].name);
+            
+            if (topImpacts.length > 0) {
+                impactDesc.textContent = `This choice strongly favors: ${topImpacts.join(', ')}`;
+            } else {
+                impactDesc.textContent = 'This choice provides balanced scoring across asset classes.';
+            }
+        }
+
+        function clearPreview() {
+            Object.keys(scores).forEach(key => {
+                const changeElement = document.getElementById(`score-change-${key}`);
+                changeElement.style.display = 'none';
+            });
+            document.getElementById('questionImpact').style.display = 'none';
         }
 
         function renderQuestion() {
@@ -822,7 +1112,10 @@
                     <p class="question-description">${question.description}</p>
                     <div class="options">
                         ${question.options.map((option, index) => `
-                            <div class="option" onclick="selectOption(${index})">
+                            <div class="option" 
+                                onclick="selectOption(${index})"
+                                onmouseover="previewOptionScores(${index})"
+                                onmouseout="clearPreview()">
                                 <div class="option-title">${option.text}</div>
                                 <div class="option-description">${option.description}</div>
                             </div>
@@ -851,8 +1144,30 @@
             const options = document.querySelectorAll('.option');
             options.forEach(opt => opt.classList.remove('selected'));
             options[index].classList.add('selected');
+            
+            // If changing answer, revert previous scores
+            if (answers[currentQuestion] !== undefined && answers[currentQuestion] !== index) {
+                const oldOption = questions[currentQuestion].options[answers[currentQuestion]];
+                Object.keys(oldOption.scores).forEach(asset => {
+                    scores[asset] -= oldOption.scores[asset];
+                });
+            }
+            
+            // Apply new scores
+            const newOption = questions[currentQuestion].options[index];
+            Object.keys(scores).forEach(key => {
+                previousScores[key] = scores[key];
+            });
+            Object.keys(newOption.scores).forEach(asset => {
+                scores[asset] += newOption.scores[asset];
+            });
+            
             answers[currentQuestion] = index;
             document.getElementById('nextBtn').disabled = false;
+            
+            // Update score panel with animation
+            updateScorePanel(true);
+            clearPreview();
         }
 
         function nextQuestion() {
@@ -864,6 +1179,7 @@
             if (currentQuestion < questions.length - 1) {
                 currentQuestion++;
                 renderQuestion();
+                updateScorePanel(false);
             } else {
                 calculateResults();
             }
@@ -871,45 +1187,44 @@
 
         function previousQuestion() {
             if (currentQuestion > 0) {
+                // Revert scores for current answer if it exists
+                if (answers[currentQuestion] !== undefined) {
+                    const option = questions[currentQuestion].options[answers[currentQuestion]];
+                    Object.keys(option.scores).forEach(asset => {
+                        scores[asset] -= option.scores[asset];
+                    });
+                }
+                
                 currentQuestion--;
                 renderQuestion();
+                updateScorePanel(false);
             }
         }
 
         function calculateResults() {
-            // Reset scores
-            Object.keys(scores).forEach(key => scores[key] = 0);
-            
-            // Calculate weighted scores
-            questions.forEach((question, qIndex) => {
-                if (answers[qIndex] !== undefined) {
-                    const selectedOption = question.options[answers[qIndex]];
-                    Object.keys(selectedOption.scores).forEach(asset => {
-                        scores[asset] += selectedOption.scores[asset];
-                    });
-                }
-            });
-            
-            // Normalize scores to percentages
-            const maxPossibleScore = questions.length * 5;
-            Object.keys(scores).forEach(key => {
-                scores[key] = Math.round((scores[key] / maxPossibleScore) * 100);
-            });
-            
+            // Scores are already calculated in real-time, just display results
             displayResults();
         }
 
         function displayResults() {
             document.getElementById('quizContainer').style.display = 'none';
             document.getElementById('resultsContainer').classList.add('active');
+            document.getElementById('scorePanel').classList.remove('active');
+            
+            // Calculate percentages for display
+            const maxPossibleScore = questions.length * 5;
+            const percentageScores = {};
+            Object.keys(scores).forEach(key => {
+                percentageScores[key] = Math.round((scores[key] / maxPossibleScore) * 100);
+            });
             
             // Sort assets by score
-            const sortedAssets = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+            const sortedAssets = Object.keys(percentageScores).sort((a, b) => percentageScores[b] - percentageScores[a]);
             
             // Generate recommendations
             const recommendations = sortedAssets.slice(0, 3).map((asset, index) => {
                 const assetData = assetClasses[asset];
-                const score = scores[asset];
+                const score = percentageScores[asset];
                 const isPrimary = index === 0 && score > 60;
                 
                 return generateRecommendationCard(asset, assetData, score, isPrimary);
@@ -1005,9 +1320,24 @@
                 futures: 0,
                 options: 0
             };
+            previousScores = {
+                stocks: 0,
+                crypto: 0,
+                forex: 0,
+                futures: 0,
+                options: 0
+            };
+            tempScores = {
+                stocks: 0,
+                crypto: 0,
+                forex: 0,
+                futures: 0,
+                options: 0
+            };
             
             document.getElementById('resultsContainer').classList.remove('active');
             document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('scorePanel').classList.remove('active');
             document.getElementById('startScreen').style.display = 'block';
             document.getElementById('progressBar').style.width = '0%';
         }
