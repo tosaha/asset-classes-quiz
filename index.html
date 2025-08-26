@@ -114,6 +114,12 @@
             gap: 4px;
         }
 
+        .raw-score {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
         .score-change {
             font-size: 12px;
             padding: 2px 6px;
@@ -703,6 +709,7 @@
         };
 
         // Quiz questions with weighted scoring for each asset class
+        // Now includes negative scores to reflect true incompatibilities
         const questions = [
             {
                 id: 1,
@@ -712,17 +719,17 @@
                     {
                         text: "Conservative",
                         description: "I prefer stable, predictable movements (±2-5% swings)",
-                        scores: { stocks: 3, crypto: 0, forex: 5, futures: 1, options: 2 }
+                        scores: { stocks: 3, crypto: -3, forex: 4, futures: -2, options: -1 }
                     },
                     {
                         text: "Moderate",
                         description: "I can handle normal volatility (±5-15% swings)",
-                        scores: { stocks: 5, crypto: 2, forex: 4, futures: 3, options: 4 }
+                        scores: { stocks: 4, crypto: 0, forex: 3, futures: 2, options: 3 }
                     },
                     {
                         text: "Aggressive",
                         description: "I thrive on high volatility (±15-50%+ swings)",
-                        scores: { stocks: 2, crypto: 5, forex: 1, futures: 5, options: 5 }
+                        scores: { stocks: -1, crypto: 5, forex: -1, futures: 4, options: 5 }
                     }
                 ]
             },
@@ -734,22 +741,22 @@
                     {
                         text: "Under $1,000",
                         description: "Starting small to learn the ropes",
-                        scores: { stocks: 2, crypto: 5, forex: 5, futures: 0, options: 1 }
+                        scores: { stocks: -1, crypto: 5, forex: 4, futures: -3, options: -2 }
                     },
                     {
                         text: "$1,000 - $10,000",
                         description: "Moderate starting capital",
-                        scores: { stocks: 4, crypto: 5, forex: 5, futures: 2, options: 4 }
+                        scores: { stocks: 2, crypto: 4, forex: 5, futures: -1, options: 3 }
                     },
                     {
                         text: "$10,000 - $25,000",
                         description: "Substantial capital for more opportunities",
-                        scores: { stocks: 5, crypto: 5, forex: 5, futures: 4, options: 5 }
+                        scores: { stocks: 4, crypto: 3, forex: 4, futures: 3, options: 4 }
                     },
                     {
                         text: "Over $25,000",
                         description: "Professional level capital (PDT rule exempt)",
-                        scores: { stocks: 5, crypto: 5, forex: 5, futures: 5, options: 5 }
+                        scores: { stocks: 5, crypto: 2, forex: 3, futures: 5, options: 5 }
                     }
                 ]
             },
@@ -761,22 +768,22 @@
                     {
                         text: "US Market Hours (9:30 AM - 4:00 PM ET)",
                         description: "Traditional trading hours",
-                        scores: { stocks: 5, crypto: 2, forex: 2, futures: 3, options: 5 }
+                        scores: { stocks: 5, crypto: -2, forex: -1, futures: 2, options: 5 }
                     },
                     {
                         text: "Asian/European Hours",
                         description: "Overnight US time",
-                        scores: { stocks: 1, crypto: 5, forex: 5, futures: 4, options: 1 }
+                        scores: { stocks: -3, crypto: 4, forex: 5, futures: 3, options: -3 }
                     },
                     {
                         text: "Flexible/24-7",
                         description: "I can trade anytime",
-                        scores: { stocks: 3, crypto: 5, forex: 5, futures: 5, options: 3 }
+                        scores: { stocks: 1, crypto: 5, forex: 4, futures: 4, options: 1 }
                     },
                     {
                         text: "Weekends Only",
                         description: "Limited to weekend trading",
-                        scores: { stocks: 0, crypto: 5, forex: 1, futures: 1, options: 0 }
+                        scores: { stocks: -3, crypto: 5, forex: -2, futures: -2, options: -3 }
                     }
                 ]
             },
@@ -788,22 +795,22 @@
                     {
                         text: "Scalping (Seconds to Minutes)",
                         description: "Ultra-short term, many trades per day",
-                        scores: { stocks: 2, crypto: 5, forex: 5, futures: 5, options: 1 }
+                        scores: { stocks: -2, crypto: 4, forex: 5, futures: 5, options: -3 }
                     },
                     {
                         text: "Day Trading (Minutes to Hours)",
                         description: "Close all positions before market close",
-                        scores: { stocks: 4, crypto: 5, forex: 5, futures: 5, options: 3 }
+                        scores: { stocks: 2, crypto: 4, forex: 4, futures: 4, options: 1 }
                     },
                     {
                         text: "Swing Trading (Days to Weeks)",
                         description: "Capture medium-term price movements",
-                        scores: { stocks: 5, crypto: 4, forex: 3, futures: 3, options: 5 }
+                        scores: { stocks: 5, crypto: 2, forex: 1, futures: 1, options: 4 }
                     },
                     {
                         text: "Position Trading (Weeks to Months)",
                         description: "Long-term trend following",
-                        scores: { stocks: 5, crypto: 3, forex: 2, futures: 2, options: 4 }
+                        scores: { stocks: 4, crypto: -1, forex: -2, futures: -1, options: 3 }
                     }
                 ]
             },
@@ -815,22 +822,22 @@
                     {
                         text: "Technical Analysis",
                         description: "Charts, patterns, and indicators",
-                        scores: { stocks: 4, crypto: 5, forex: 5, futures: 5, options: 3 }
+                        scores: { stocks: 2, crypto: 4, forex: 5, futures: 5, options: 1 }
                     },
                     {
                         text: "Fundamental Analysis",
                         description: "Company/economic data and news",
-                        scores: { stocks: 5, crypto: 2, forex: 4, futures: 3, options: 4 }
+                        scores: { stocks: 5, crypto: -2, forex: 2, futures: -1, options: 3 }
                     },
                     {
                         text: "Sentiment & Social",
                         description: "Market sentiment and social trends",
-                        scores: { stocks: 3, crypto: 5, forex: 2, futures: 2, options: 3 }
+                        scores: { stocks: 1, crypto: 5, forex: -1, futures: -2, options: 1 }
                     },
                     {
                         text: "Quantitative/Algorithmic",
                         description: "Data-driven and systematic",
-                        scores: { stocks: 4, crypto: 4, forex: 5, futures: 5, options: 5 }
+                        scores: { stocks: 2, crypto: 2, forex: 4, futures: 4, options: 5 }
                     }
                 ]
             },
@@ -842,17 +849,17 @@
                     {
                         text: "Very Sensitive",
                         description: "Small losses affect me significantly",
-                        scores: { stocks: 4, crypto: 1, forex: 3, futures: 1, options: 2 }
+                        scores: { stocks: 4, crypto: -3, forex: 1, futures: -2, options: -1 }
                     },
                     {
                         text: "Moderate Tolerance",
                         description: "I can handle normal trading losses",
-                        scores: { stocks: 5, crypto: 3, forex: 5, futures: 3, options: 4 }
+                        scores: { stocks: 3, crypto: 1, forex: 4, futures: 2, options: 3 }
                     },
                     {
                         text: "High Tolerance",
                         description: "I view losses as learning opportunities",
-                        scores: { stocks: 3, crypto: 5, forex: 4, futures: 5, options: 5 }
+                        scores: { stocks: -1, crypto: 5, forex: 3, futures: 5, options: 4 }
                     }
                 ]
             },
@@ -864,17 +871,17 @@
                     {
                         text: "No Experience/Avoid",
                         description: "Prefer to trade without leverage",
-                        scores: { stocks: 5, crypto: 2, forex: 1, futures: 0, options: 2 }
+                        scores: { stocks: 5, crypto: -1, forex: -3, futures: -3, options: 1 }
                     },
                     {
                         text: "Some Experience",
                         description: "Comfortable with moderate leverage (2-5x)",
-                        scores: { stocks: 4, crypto: 4, forex: 4, futures: 3, options: 4 }
+                        scores: { stocks: 2, crypto: 3, forex: 3, futures: 2, options: 3 }
                     },
                     {
                         text: "Very Experienced",
                         description: "Skilled at managing high leverage positions",
-                        scores: { stocks: 2, crypto: 5, forex: 5, futures: 5, options: 5 }
+                        scores: { stocks: -2, crypto: 3, forex: 5, futures: 5, options: 4 }
                     }
                 ]
             },
@@ -886,22 +893,22 @@
                     {
                         text: "Business & Innovation",
                         description: "Company growth and sector trends",
-                        scores: { stocks: 5, crypto: 3, forex: 1, futures: 2, options: 4 }
+                        scores: { stocks: 5, crypto: 1, forex: -2, futures: -1, options: 3 }
                     },
                     {
                         text: "Technology & Disruption",
                         description: "New technologies and paradigm shifts",
-                        scores: { stocks: 3, crypto: 5, forex: 1, futures: 2, options: 3 }
+                        scores: { stocks: 1, crypto: 5, forex: -2, futures: -1, options: 1 }
                     },
                     {
                         text: "Global Economics",
                         description: "Macroeconomics and geopolitics",
-                        scores: { stocks: 3, crypto: 2, forex: 5, futures: 4, options: 3 }
+                        scores: { stocks: 1, crypto: -1, forex: 5, futures: 3, options: 1 }
                     },
                     {
                         text: "Mathematical Patterns",
                         description: "Price action and statistical edges",
-                        scores: { stocks: 3, crypto: 4, forex: 5, futures: 5, options: 5 }
+                        scores: { stocks: 1, crypto: 2, forex: 4, futures: 4, options: 5 }
                     }
                 ]
             },
@@ -913,17 +920,17 @@
                     {
                         text: "Very Important",
                         description: "I want maximum regulatory protection",
-                        scores: { stocks: 5, crypto: 1, forex: 4, futures: 5, options: 5 }
+                        scores: { stocks: 5, crypto: -3, forex: 2, futures: 4, options: 4 }
                     },
                     {
                         text: "Somewhat Important",
                         description: "Balance between freedom and protection",
-                        scores: { stocks: 4, crypto: 3, forex: 4, futures: 4, options: 4 }
+                        scores: { stocks: 3, crypto: 1, forex: 3, futures: 3, options: 3 }
                     },
                     {
                         text: "Not Important",
                         description: "I prefer less regulated markets",
-                        scores: { stocks: 2, crypto: 5, forex: 3, futures: 2, options: 2 }
+                        scores: { stocks: -2, crypto: 5, forex: 1, futures: -1, options: -1 }
                     }
                 ]
             },
@@ -935,22 +942,22 @@
                     {
                         text: "Structured Education",
                         description: "Courses, books, and formal training",
-                        scores: { stocks: 5, crypto: 3, forex: 4, futures: 4, options: 5 }
+                        scores: { stocks: 4, crypto: -1, forex: 2, futures: 2, options: 5 }
                     },
                     {
                         text: "Community Learning",
                         description: "Forums, social media, and peer groups",
-                        scores: { stocks: 3, crypto: 5, forex: 3, futures: 2, options: 3 }
+                        scores: { stocks: 0, crypto: 5, forex: 1, futures: -1, options: 0 }
                     },
                     {
                         text: "Trial and Error",
                         description: "Learn by doing with small positions",
-                        scores: { stocks: 3, crypto: 5, forex: 5, futures: 3, options: 2 }
+                        scores: { stocks: 1, crypto: 4, forex: 4, futures: 1, options: -1 }
                     },
                     {
                         text: "Mentorship",
                         description: "One-on-one guidance from experts",
-                        scores: { stocks: 4, crypto: 3, forex: 4, futures: 5, options: 5 }
+                        scores: { stocks: 2, crypto: 0, forex: 2, futures: 4, options: 4 }
                     }
                 ]
             }
@@ -988,6 +995,20 @@
             renderQuestion();
         }
 
+        function calculateScoreRanges() {
+            const ranges = {};
+            Object.keys(assetClasses).forEach(asset => {
+                let min = 0, max = 0;
+                questions.forEach(question => {
+                    const assetScores = question.options.map(opt => opt.scores[asset] || 0);
+                    min += Math.min(...assetScores);
+                    max += Math.max(...assetScores);
+                });
+                ranges[asset] = { min, max };
+            });
+            return ranges;
+        }
+
         function initializeScorePanel() {
             const scoresHtml = Object.keys(assetClasses).map(key => `
                 <div class="asset-score-item" id="score-${key}">
@@ -995,6 +1016,7 @@
                         <div class="asset-score-name">${assetClasses[key].name}</div>
                         <div class="asset-score-value">
                             <span id="score-value-${key}">0%</span>
+                            <span class="raw-score" id="raw-score-${key}">(0)</span>
                             <span class="score-change neutral" id="score-change-${key}" style="display: none;">0</span>
                         </div>
                     </div>
@@ -1008,14 +1030,19 @@
         }
 
         function updateScorePanel(showChange = false) {
-            const maxPossibleScore = questions.length * 5;
+            // Calculate min and max possible scores for normalization
+            const scoreRanges = calculateScoreRanges();
             
             Object.keys(scores).forEach(key => {
-                const percentage = Math.round((scores[key] / maxPossibleScore) * 100);
+                const range = scoreRanges[key];
+                const normalizedScore = scores[key] - range.min;
+                const normalizedMax = range.max - range.min;
+                const percentage = Math.max(0, Math.min(100, Math.round((normalizedScore / normalizedMax) * 100)));
                 const changeValue = scores[key] - previousScores[key];
                 
-                // Update score value
+                // Update score value and raw score
                 document.getElementById(`score-value-${key}`).textContent = `${percentage}%`;
+                document.getElementById(`raw-score-${key}`).textContent = `(${scores[key] > 0 ? '+' : ''}${scores[key]})`;
                 
                 // Update progress bar
                 document.getElementById(`score-bar-${key}`).style.width = `${percentage}%`;
@@ -1059,10 +1086,8 @@
             });
             
             // Update display with temp scores
-            const maxPossibleScore = questions.length * 5;
+            const scoreRanges = calculateScoreRanges();
             Object.keys(tempScores).forEach(key => {
-                const currentPercentage = Math.round((scores[key] / maxPossibleScore) * 100);
-                const tempPercentage = Math.round((tempScores[key] / maxPossibleScore) * 100);
                 const change = option.scores[key] || 0;
                 
                 if (change !== 0) {
@@ -1211,11 +1236,14 @@
             document.getElementById('resultsContainer').classList.add('active');
             document.getElementById('scorePanel').classList.remove('active');
             
-            // Calculate percentages for display
-            const maxPossibleScore = questions.length * 5;
+            // Calculate percentages for display using normalization
+            const scoreRanges = calculateScoreRanges();
             const percentageScores = {};
             Object.keys(scores).forEach(key => {
-                percentageScores[key] = Math.round((scores[key] / maxPossibleScore) * 100);
+                const range = scoreRanges[key];
+                const normalizedScore = scores[key] - range.min;
+                const normalizedMax = range.max - range.min;
+                percentageScores[key] = Math.max(0, Math.min(100, Math.round((normalizedScore / normalizedMax) * 100)));
             });
             
             // Sort assets by score
